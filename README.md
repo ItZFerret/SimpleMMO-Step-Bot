@@ -3,7 +3,7 @@ Super simple.. SimpleMMO step bot.
 
 This bot utilizes the undetected chrome driver and looks for the step button, and presses it.
 
-It will also detect when the human verification comes up after a step, and the program will pause. I recommend checking in on the bot once every 10-15 minutes, doing the captcha, and typing "c" in the console window to continue the loop. You will also be notified when you find an item.
+It will also detect when the human verification comes up after a step, and the program will pause and send a toast notification that you need to solve the captcha. Once solved, type "c" into console.
 
 I've been running this from level 2-3 up until level 80~ now and have had zero issues.
 
