@@ -11,23 +11,32 @@ from selenium.webdriver.common.by import By
 from win10toast import ToastNotifier
 from win11toast import toast
 
+# Get the PID of the current Python process
+pid = os.getpid()
+
+# Write the PID to a text file
+with open("pid.txt", "w") as f:
+    f.write(str(pid))
+
 # Load the user agent from agent.txt
 with open("agent.txt") as f:
     user_agent = f.read().strip()
 
-#Load the saved user login from login.txt
+# Load the saved user login from login.txt
 if os.path.exists("login.txt"):
     with open("login.txt") as f:
         lines = f.readlines()
         email = lines[0].strip()
         password = lines[1].strip()
+        time_limit_hours = int(lines[2].strip()) # Change this line
 else:
     # prompt the user to enter their login info
     email = input("Enter your email: ")
     password = input("Enter your password: ")
+    time_limit_hours = int(input("Enter the time limit in hours: ")) # Change this line
     # save the users input to login.txt for next launch
     with open("login.txt", "w") as f:
-        f.write(f"{email}\n{password}")
+        f.write(f"{email}\n{password}\n{time_limit_hours}")
 
 # Set up the Chrome driver with the undetected chrome module
 options = ChromeOptions()
@@ -82,11 +91,15 @@ step_button = WebDriverWait(driver, 10).until(
 loop_count = 0 # tracking the number of steps taken with the bot
 item_count = 0 # tracking the number of items found with the bot
 item_store = 0 # storing amount of items found with the bot in one session
+step_store = 0 # storing amount of steps in one session
 
 alert_sound = lambda: winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS)
 toaster = ToastNotifier()
 
-while True:
+# Calculate the time at which the loop should stop
+stop_time = time.time() + time_limit_hours * 3600
+
+while time.time() < stop_time:
     try:
         if step_button.is_enabled():
             step_button.click()
@@ -104,7 +117,6 @@ while True:
        if captcha_link.is_displayed():
             print("Solve the captcha to continue, if you are done solving, type C to continue the loop.")
             alert_sound()
-            toaster.show_toast("Verification Detected", "Solve the captcha to continue stepping", duration=10)
             toast("Verification Detected", "Solve the captcha to continue stepping")
             while True:
                 if input().lower() == "c":
@@ -123,13 +135,17 @@ while True:
     except:
         pass
     with open("ItemsFound.txt", "w") as f:
-        f.write(f"{item_store} items found in your last session!")
+        f.write(f"{item_store} items found in this session!")
 
     # Print "looping..." and wait for 3 seconds before restarting the loop
     loop_count += 1
+    step_store += 1
+    with open("steps.txt", "w") as f:
+        f.write(f"{step_store} steps taken this session!")
     print("stepping...")
     time.sleep(3)
     print(f"{loop_count} steps taken in current session!")
+
 
 # Close the driver when the loop is finished
 driver.quit()
