@@ -1,0 +1,4 @@
+selenium==4.8.2
+undetected_chromedriver==3.4.6
+win10toast==0.9
+win11toast==0.32
