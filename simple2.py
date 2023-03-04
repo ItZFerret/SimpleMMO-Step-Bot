@@ -1,10 +1,15 @@
 import time
 import sys
 import os
+import winsound
+import win10toast
+import win11toast
 from undetected_chromedriver import Chrome, ChromeOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from win10toast import ToastNotifier
+from win11toast import toast
 
 # Load the user agent from agent.txt
 with open("agent.txt") as f:
@@ -64,6 +69,7 @@ time.sleep(3)
 driver.get("https://web.simple-mmo.com/travel")
 
 print("Welcome to SimpleMMO Stepper!")
+toast('Welcome to SimpleMMO Stepper!')
 
 # Wait for the page to load
 time.sleep(3)
@@ -77,6 +83,8 @@ loop_count = 0 # tracking the number of steps taken with the bot
 item_count = 0 # tracking the number of items found with the bot
 item_store = 0 # storing amount of items found with the bot in one session
 
+alert_sound = lambda: winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS)
+toaster = ToastNotifier()
 
 while True:
     try:
@@ -95,6 +103,9 @@ while True:
        captcha_link = driver.find_element(By.XPATH, "//*[text()='Perform Verification']")
        if captcha_link.is_displayed():
             print("Solve the captcha to continue, if you are done solving, type C to continue the loop.")
+            alert_sound()
+            toaster.show_toast("Verification Detected", "Solve the captcha to continue stepping", duration=10)
+            toast("Verification Detected", "Solve the captcha to continue stepping")
             while True:
                 if input().lower() == "c":
                     break
